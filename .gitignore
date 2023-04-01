@@ -1,0 +1,6 @@
+.DS_Store
+application.yml
+application.properties
+.gradle/
+.idea/
+gradle/
