@@ -4,3 +4,4 @@ application.properties
 .gradle/
 .idea/
 gradle/
+data.sql
