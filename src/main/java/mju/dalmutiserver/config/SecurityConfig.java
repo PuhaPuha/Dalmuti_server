@@ -63,6 +63,7 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests()
+                .requestMatchers("/test").permitAll()
                 .requestMatchers("/api/signup").permitAll()
                 .requestMatchers("/api/authenticate").permitAll()
                 .requestMatchers("/api/user/{username}").hasRole("ADMIN")
