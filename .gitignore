@@ -3,5 +3,4 @@ application.yml
 application.properties
 .gradle/
 .idea/
-gradle/
 data.sql
