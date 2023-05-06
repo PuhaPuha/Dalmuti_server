@@ -66,6 +66,8 @@ public class SecurityConfig {
                 .requestMatchers("/test").permitAll()
                 .requestMatchers("/api/signup").permitAll()
                 .requestMatchers("/api/authenticate").permitAll()
+                .requestMatchers("/room").permitAll()
+                .requestMatchers("/score").permitAll()
                 .requestMatchers("/api/user/{username}").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
