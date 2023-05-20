@@ -4,9 +4,10 @@ import mju.dalmutiserver.dto.GetRoomDto;
 import mju.dalmutiserver.entity.Room;
 import mju.dalmutiserver.entity.User;
 import mju.dalmutiserver.entity.UserAndRoom;
+import mju.dalmutiserver.exception.CannotAccessRoomException;
+import mju.dalmutiserver.exception.RoomNotFoundException;
 import mju.dalmutiserver.repository.RoomRepository;
 import mju.dalmutiserver.repository.UserAndRoomRepository;
-import mju.dalmutiserver.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,13 +16,10 @@ import java.util.ArrayList;
 public class RoomService {
    private final RoomRepository roomRepository;
    private final UserAndRoomRepository userAndRoomRepository;
-    private final UserRepository userRepository;
 
-    public RoomService(RoomRepository roomRepository, UserAndRoomRepository userAndRoomRepository,
-                       UserRepository userRepository) {
+    public RoomService(RoomRepository roomRepository, UserAndRoomRepository userAndRoomRepository) {
         this.roomRepository = roomRepository;
         this.userAndRoomRepository = userAndRoomRepository;
-        this.userRepository = userRepository;
     }
 
     public Room newRoom(User user, String name) {
@@ -41,39 +39,31 @@ public class RoomService {
 
     public GetRoomDto findRoom(Long room_id) {
         Room targetRoom = roomRepository.findById(room_id).orElseThrow(
-                RuntimeException::new
+                () -> new RoomNotFoundException("방이 없습니다.")
         );
-        ArrayList<UserAndRoom> userAndRooms = (ArrayList<UserAndRoom>) userAndRoomRepository.findAllByRoomId(room_id);
-        ArrayList<User> users = new ArrayList<>();
-        for (UserAndRoom userAndRoom : userAndRooms) {
-            users.add(userAndRoom.getUser());
-        }
+
+        User owner = userAndRoomRepository.findByRoomId(room_id).getUser();
         return GetRoomDto.builder()
                 .id(targetRoom.getId())
-                .users(users)
+                .user(owner)
                 .build();
     }
 
     public GetRoomDto join(Long room_id, User user) {
         Room targetRoom = roomRepository.findById(room_id).orElseThrow(
-                RuntimeException::new
+                () -> new RoomNotFoundException("방이 없습니다.")
         );
-        UserAndRoom existUserAndRoom = userAndRoomRepository.findByRoomIdAndUserId(room_id, user.getId());
-        if (existUserAndRoom == null) {
-            UserAndRoom newUserAndRoom = UserAndRoom.builder()
-                                                    .user(user)
-                                                    .room(targetRoom)
-                                                    .build();
-            userAndRoomRepository.save(newUserAndRoom);
-        }
-        ArrayList<UserAndRoom> userAndRooms = (ArrayList<UserAndRoom>) userAndRoomRepository.findAllByRoomId(room_id);
-        ArrayList<User> users = new ArrayList<>();
-        for (UserAndRoom userAndRoom : userAndRooms) {
-            users.add(userAndRoom.getUser());
-        }
+
+        User owner = getOwner(room_id, user);
         return GetRoomDto.builder()
                 .id(targetRoom.getId())
-                .users(users)
+                .user(owner)
                 .build();
+    }
+
+    private User getOwner(Long room_id, User user) {
+        UserAndRoom existUserAndRoom = userAndRoomRepository.findByRoomIdAndUserId(room_id, user.getId())
+                .orElseThrow(() -> new CannotAccessRoomException("입장할 수 없습니다."));
+        return existUserAndRoom.getUser();
     }
 }
