@@ -27,7 +27,7 @@ public class RoomController {
     @PostMapping
     public ResponseEntity<?> createRoom(@RequestBody RoomDto roomDto) {
         try {
-            return ResponseEntity.ok().body(roomService.newRoom(userUtil.getLoggedInUser(), roomDto.getName()));
+            return ResponseEntity.ok().body(roomService.newRoom(userUtil.getLoggedInUser(), roomDto.getName(), roomDto.getMode()));
         } catch (Exception e) {
             ExceptionResponse exceptionResponse = new ExceptionResponse(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

@@ -10,4 +10,5 @@ import lombok.*;
 public class RoomDto {
 
     private String name;
+    private String mode;
 }

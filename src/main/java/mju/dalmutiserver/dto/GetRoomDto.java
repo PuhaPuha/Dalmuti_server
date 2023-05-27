@@ -3,6 +3,8 @@ package mju.dalmutiserver.dto;
 import lombok.*;
 import mju.dalmutiserver.entity.User;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -11,5 +13,6 @@ import mju.dalmutiserver.entity.User;
 public class GetRoomDto {
 
     private Long id;
-    private User user;
+    private List<User> users;
+    private String mode;
 }

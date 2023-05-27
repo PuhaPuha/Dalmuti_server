@@ -22,6 +22,8 @@ public class Room {
 
     private String name;
 
+    private String mode;
+
     @JsonIgnore
     @OneToMany(mappedBy = "room")
     private List<UserAndRoom> userAndRooms = new ArrayList<>();
